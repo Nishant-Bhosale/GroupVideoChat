@@ -11,7 +11,7 @@
 */
 import React, {useState, useContext, useEffect} from 'react';
 import {View, StyleSheet, Text, Platform} from 'react-native';
-
+import Poll from '../components/Poll.jsx';
 import {
   RtcConfigure,
   PropsProvider,
@@ -398,6 +398,7 @@ const VideoCall: React.FC = () => {
                         isHost={isHost}>
                         {callActive ? (
                           <View style={style.full}>
+                            <Poll />
                             <NotificationControl
                               setSidePanel={setSidePanel}
                               chatDisplayed={sidePanel === SidePanelType.Chat}

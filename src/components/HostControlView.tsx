@@ -60,15 +60,13 @@ const HostControlView = () => {
                 <br />
                 <TextInput
                   value={answer.value}
-                  onChangeText={(enteredText) => {
-                    setAnswers(
-                      setAnswers([
-                        ...answer.slice(0, i),
-                        {option: enteredText, votes: 0},
-                        ...answers.slice(i + 1),
-                      ]),
-                    );
-                  }}
+                  onChangeText={(enteredText) =>
+                    setAnswers([
+                      ...answers.slice(0, i),
+                      {option: enteredText, votes: 0},
+                      ...answers.slice(i + 1),
+                    ])
+                  }
                   placeholder={`Poll Answer ${i + 1}`}
                 />
               </div>
