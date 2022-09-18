@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import styles from '../styles/pollStyles';
 import {Line} from 'rc-progress';
 import {PollContext} from '../PollContext/PollContext.js';
+import chatContext, {controlMessageEnum} from './ChatContext';
 
 const Poll = () => {
   const {
@@ -16,6 +17,27 @@ const Poll = () => {
 
   const [totalVotes, setTotalVotes] = useState(0);
   const [voted, setVoted] = useState(false);
+
+  const {sendControlMessage} = useContext(chatContext);
+
+  const submitVote = (e, chosenAnswer) => {
+    if (!voted) {
+      const newAnswers = voteData.map((answer) => {
+        if (answer.option === chosenAnswer.option) {
+          return {...answer, votes: answer.votes + 1};
+        } else {
+          return answer;
+        }
+      });
+      setVoted((prev) => !prev);
+      setAnswers(newAnswers);
+      sendControlMessage(controlMessageEnum.initiatePoll, {
+        question,
+        answers: newAnswers,
+      });
+      setTotalVotes((prevTotalVotes) => prevTotalVotes + 1);
+    }
+  };
 
   const closeModal = () => {
     setIsModalOpen(false);

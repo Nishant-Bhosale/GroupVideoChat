@@ -28,6 +28,7 @@ import {Platform} from 'react-native';
 import {backOff} from 'exponential-backoff';
 import events from './RTMEvents';
 import {filterObject} from '../utils';
+import {PollContext} from '../PollContext/PollContext.js';
 
 export enum UserType {
   Normal,
@@ -67,6 +68,7 @@ function hasJsonStructure(str: string) {
     return false;
   }
 }
+
 function safeJsonParse(str: string) {
   try {
     return [null, JSON.parse(str)];
@@ -74,6 +76,7 @@ function safeJsonParse(str: string) {
     return [err];
   }
 }
+
 const timeNow = () => new Date().getTime();
 
 const RtmConfigure = (props: any) => {
@@ -85,6 +88,8 @@ const RtmConfigure = (props: any) => {
   const [login, setLogin] = useState<boolean>(false);
   const [userList, setUserList] = useState<{[key: string]: any}>({});
   const [onlineUsersCount, setTotalOnlineUsers] = useState<number>(0);
+
+  const {setQuestion, setAnswers, setIsModalOpen} = useContext(PollContext);
 
   let engine = useRef<RtmEngine>(null!);
   let localUid = useRef<string>('');
@@ -463,6 +468,11 @@ const RtmConfigure = (props: any) => {
               case controlMessageEnum.cloudRecordingUnactive:
                 setRecordingActive(false);
                 break;
+              case controlMessageEnum.initiateMessage:
+                const {question, answers} = JSON.parse(actionMsg.slice(2));
+                setQuestion(question);
+                setAnswers(answers);
+                setIsModalOpen(true);
               case controlMessageEnum.clientRoleChanged:
                 const {payload} = JSON.parse(msg);
                 if (payload && payload?.role) {
@@ -571,16 +581,28 @@ const RtmConfigure = (props: any) => {
     );
   };
 
-  const sendControlMessage = async (msg: string) => {
-    const text = stringifyPayload(
-      messageSourceType.Core,
-      messageActionType.Control,
-      msg,
-    );
-    await (engine.current as RtmEngine).sendMessageByChannelId(
-      rtcProps.channel,
-      text,
-    );
+  const sendControlMessage = async (msg: string, obj) => {
+    if (msg === '8') {
+      const text = stringifyPayload(
+        messageSourceType.Core,
+        messageActionType.Control,
+        msg + JSON.stringify(obj),
+      );
+      await (engine.current as RtmEngine).sendMessageByChannelId(
+        rtcProps.channel,
+        text,
+      );
+    } else {
+      const text = stringifyPayload(
+        messageSourceType.Core,
+        messageActionType.Control,
+        msg,
+      );
+      await (engine.current as RtmEngine).sendMessageByChannelId(
+        rtcProps.channel,
+        text,
+      );
+    }
   };
 
   const sendControlMessageToUid = async (msg: string, uid: number) => {

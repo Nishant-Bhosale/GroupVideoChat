@@ -77,6 +77,7 @@ export enum controlMessageEnum {
   cloudRecordingActive = '6',
   cloudRecordingUnactive = '7',
   clientRoleChanged = 'CLIENT_ROLE_CHANGED',
+  initiatePoll = '8',
   // TODO move to livestream provider
 }
 
