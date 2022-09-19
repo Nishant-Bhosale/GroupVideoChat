@@ -18,6 +18,13 @@ const Poll = () => {
   const [totalVotes, setTotalVotes] = useState(0);
   const [voted, setVoted] = useState(false);
 
+  useEffect(() => {
+    if (voteData.length > 1) {
+      setTotalVotes(
+        voteData.map((item) => item.votes).reduce((prev, next) => prev + next),
+      );
+    }
+  }, []);
   const {sendControlMessage} = useContext(chatContext);
 
   const submitVote = (e, chosenAnswer) => {

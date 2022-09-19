@@ -468,8 +468,10 @@ const RtmConfigure = (props: any) => {
               case controlMessageEnum.cloudRecordingUnactive:
                 setRecordingActive(false);
                 break;
-              case controlMessageEnum.initiateMessage:
-                const {question, answers} = JSON.parse(actionMsg.slice(2));
+              case controlMessageEnum.initiatePoll:
+                console.log(actionMsg.slice(1));
+                const {question, answers} = JSON.parse(actionMsg.slice(1));
+
                 setQuestion(question);
                 setAnswers(answers);
                 setIsModalOpen(true);
@@ -583,11 +585,13 @@ const RtmConfigure = (props: any) => {
 
   const sendControlMessage = async (msg: string, obj) => {
     if (msg === '8') {
+      console.log(obj);
       const text = stringifyPayload(
         messageSourceType.Core,
         messageActionType.Control,
-        msg + JSON.stringify(obj),
+        msg + obj,
       );
+      console.log(text);
       await (engine.current as RtmEngine).sendMessageByChannelId(
         rtcProps.channel,
         text,
